@@ -18,7 +18,7 @@ class WebViewScreenState extends State<WebViewScreen> {
         WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..loadRequest(
-            Uri.parse("https://weblytechnolab.com/"),
+            Uri.parse("https://spendwise-web-seven.vercel.app/"),
           ); // Change this to your actual URL
   }
 

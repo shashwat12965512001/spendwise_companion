@@ -1,5 +1,4 @@
 <div class="markdown prose w-full break-words dark:prose-invert dark">
-  <hr data-start="2510" data-end="2513" class="">
   <h1 data-start="66" data-end="90" class="">🌐 Flutter WebView App</h1>
   <p data-start="92" data-end="182" class="">A simple Flutter app that loads a website using <code data-start="140"
       data-end="157">webview_flutter</code> and supports JavaScript.</p>
@@ -86,5 +85,4 @@
       <h2 data-start="2440" data-end="2453" class="">📜 License</h2>
       <p data-start="2454" data-end="2508" class="">This project is open-source under the <strong data-start="2492"
           data-end="2507">MIT License</strong>.</p>
-      <hr data-start="2510" data-end="2513" class="">
 </div>

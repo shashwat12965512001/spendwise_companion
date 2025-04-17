@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spendwise_companion/webview_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MainApp());
 }
 

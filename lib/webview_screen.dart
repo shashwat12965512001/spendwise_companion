@@ -34,11 +34,13 @@ class WebViewScreenState extends State<WebViewScreen> {
               // Send userId to PythonAnywhere backend
               final response = await http.post(
                 Uri.parse(
-                  'https://ss12965512001.pythonanywhere.com/getMonthlyBudget',
+                  'https://backend.weblytechnolab.com/getMonthlyBudget',
                 ),
                 headers: {'Content-Type': 'application/json'},
                 body: jsonEncode({'user_id': userId}),
               );
+
+              debugPrint("getMonthlyBudget response: $response");
 
               if (response.statusCode == 200) {
                 final data = jsonDecode(response.body);

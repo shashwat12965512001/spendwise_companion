@@ -54,9 +54,7 @@ class SmsReader {
           };
         }).toList();
 
-    final uri = Uri.parse(
-      'https://ss12965512001.pythonanywhere.com/transactions',
-    );
+    final uri = Uri.parse('https://backend.weblytechnolab.com/transactions');
 
     final response = await http.post(
       uri,
@@ -72,5 +70,10 @@ class SmsReader {
         "❌ Failed to send transactions: ${response.statusCode} ${response.body}",
       );
     }
+  }
+
+  Future<bool> hasAlreadySentTransactions(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('smsFetched_$userId') ?? false;
   }
 }

@@ -11,6 +11,24 @@ class WebViewScreen extends StatefulWidget {
   WebViewScreenState createState() => WebViewScreenState();
 }
 
+Future<void> fetchMonthlyBudget(String userId) async {
+  debugPrint("fetchMonthlyBudget called");
+  final response = await http.post(
+    Uri.parse('https://backend.weblytechnolab.com/getMonthlyBudget'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'user_id': userId}),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    debugPrint("📊 Monthly Budget Data: $data");
+  } else {
+    debugPrint(
+      "❌ Failed to fetch budget: ${response.statusCode} ${response.body}",
+    );
+  }
+}
+
 class WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
   final SmsReader smsReader = SmsReader();
@@ -26,31 +44,20 @@ class WebViewScreenState extends State<WebViewScreen> {
             'FlutterBridge',
             onMessageReceived: (JavaScriptMessage message) async {
               final userId = message.message;
-              debugPrint("✅ Got userId from WebView: $userId");
+              // debugPrint("✅ Got userId from WebView: $userId");
 
-              // Call SMS logic here
-              await smsReader.sendTransactionsToBackendIfFirstTime(userId);
+              // final hasSentTransactions = await smsReader
+              //     .hasAlreadySentTransactions(
+              //       userId,
+              //     ); // You'll create this check
 
-              // Send userId to PythonAnywhere backend
-              final response = await http.post(
-                Uri.parse(
-                  'https://backend.weblytechnolab.com/getMonthlyBudget',
-                ),
-                headers: {'Content-Type': 'application/json'},
-                body: jsonEncode({'user_id': userId}),
-              );
+              // if (!hasSentTransactions) {
+              //   await smsReader.sendTransactionsToBackendIfFirstTime(userId);
+              // } else {
+              //   debugPrint("📩 Transactions already sent for user $userId");
+              // }
 
-              debugPrint("getMonthlyBudget response: $response");
-
-              if (response.statusCode == 200) {
-                final data = jsonDecode(response.body);
-                debugPrint("📊 Monthly Budget Data: $data");
-                // You can store this or use setState to display
-              } else {
-                debugPrint(
-                  "❌ Failed to fetch budget: ${response.statusCode} ${response.body}",
-                );
-              }
+              await fetchMonthlyBudget(userId);
             },
           )
           ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));

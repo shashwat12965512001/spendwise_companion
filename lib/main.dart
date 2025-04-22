@@ -6,10 +6,20 @@ import 'package:spendwise_companion/webview_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Request notification permission
   await NotificationHelper.init();
-
   if (await Permission.notification.isDenied) {
     await Permission.notification.request();
+  }
+
+  // Request SMS permission
+  var permissionStatus = await Permission.sms.status;
+  if (!permissionStatus.isGranted) {
+    permissionStatus = await Permission.sms.request();
+  }
+
+  if (!permissionStatus.isGranted) {
+    throw Exception('SMS Permission denied');
   }
 
   runApp(const MainApp());

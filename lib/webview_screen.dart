@@ -1,17 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:spendwise_companion/notification.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:spendwise_companion/sms_reader.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+class Recommendation {
+  final String title;
+  final String body;
 
-Future<List<String>> fetchSuggestions(String userId) async {
-  debugPrint("fetchSuggestions called with userId: $userId");
+  Recommendation({required this.title, required this.body});
+
+  factory Recommendation.fromJson(Map<String, dynamic> json) {
+    return Recommendation(title: json['title'] ?? '', body: json['body'] ?? '');
+  }
+}
+
+Future<List<Recommendation>> fetchSuggestions(String userId) async {
   try {
     final response = await http.post(
       Uri.parse("https://backend.weblytechnolab.com/getSuggestions"),
@@ -22,12 +28,14 @@ Future<List<String>> fetchSuggestions(String userId) async {
     final data = jsonDecode(response.body);
     debugPrint("🎯 Suggestions Response: $data");
 
-    if (data["status"] == true && data["suggestions"] != null) {
-      List suggestions = data["suggestions"];
-      return suggestions.map<String>((s) => s.toString()).toList();
+    if (data["status"] == true && data["recommendations"] != null) {
+      List recs = data["recommendations"];
+      return recs
+          .map<Recommendation>((r) => Recommendation.fromJson(r))
+          .toList();
     } else {
       debugPrint(
-        "❌ Failed to fetch suggestions: ${data['message'] ?? data['error']}",
+        "❌ Failed to fetch recommendations: ${data['message'] ?? 'Unknown error'}",
       );
       return [];
     }
@@ -37,15 +45,14 @@ Future<List<String>> fetchSuggestions(String userId) async {
   }
 }
 
-Future<void> showRepeatedNotifications(List<String> suggestions) async {
+Future<void> showRepeatedNotifications(List<Recommendation> suggestions) async {
   for (int i = 0; i < suggestions.length; i++) {
-    await NotificationHelper.showNotification(
-      "📢 Recommendation ${i + 1}",
-      suggestions[i],
-    );
+    final rec = suggestions[i];
 
-    // Wait between 5–10 seconds randomly
-    final delay = Duration(seconds: 5 + (i % 6)); // randomish 5-10s
+    await NotificationHelper.showNotification(rec.title, rec.body);
+
+    // Add a natural delay between 5–10 seconds (using modulo as a light randomizer)
+    final delay = Duration(seconds: 5 + (i % 6));
     await Future.delayed(delay);
   }
 }
@@ -71,9 +78,7 @@ class WebViewScreenState extends State<WebViewScreen> {
           ..addJavaScriptChannel(
             'FlutterBridge',
             onMessageReceived: (JavaScriptMessage message) async {
-              debugPrint("message: $message");
               final userId = message.message;
-              debugPrint("✅ Got userId from WebView: $userId");
 
               final hasSentTransactions = await smsReader
                   .hasAlreadySentTransactions(
@@ -81,17 +86,16 @@ class WebViewScreenState extends State<WebViewScreen> {
                   ); // You'll create this check
 
               if (!hasSentTransactions) {
-                debugPrint("if hasSentTransactions");
                 await smsReader.sendTransactionsToBackendIfFirstTime(userId);
               } else {
-                debugPrint("else hasSentTransactions");
                 debugPrint("📩 Transactions already sent for user $userId");
               }
 
-              List<String> suggestions = await fetchSuggestions(userId);
-              debugPrint("✅ Suggestions: $suggestions");
-
-              // showRepeatedNotifications(suggestions);
+              List<Recommendation> suggestions = await fetchSuggestions(userId);
+              for (var rec in suggestions) {
+                debugPrint("🔔 ${rec.title}: ${rec.body}");
+              }
+              await showRepeatedNotifications(suggestions);
             },
           )
           ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));

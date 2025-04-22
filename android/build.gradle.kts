@@ -6,8 +6,12 @@ allprojects {
 }
 
 buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath("com.android.tools.build:gradle:8.6.0")
     }
 }
 
@@ -21,7 +25,5 @@ subprojects {
 }
 
 subprojects { project.evaluationDependsOn(":app") }
-
-tasks.register<Delete>("clean") { delete(rootProject.layout.buildDirectory) }
 
 tasks.register<Delete>("clean") { delete(rootProject.layout.buildDirectory) }

@@ -11,6 +11,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<List<String>> fetchSuggestions(String userId) async {
+  debugPrint("fetchSuggestions called with userId: $userId");
   try {
     final response = await http.post(
       Uri.parse("https://backend.weblytechnolab.com/getSuggestions"),
@@ -80,15 +81,17 @@ class WebViewScreenState extends State<WebViewScreen> {
                   ); // You'll create this check
 
               if (!hasSentTransactions) {
+                debugPrint("if hasSentTransactions");
                 await smsReader.sendTransactionsToBackendIfFirstTime(userId);
               } else {
+                debugPrint("else hasSentTransactions");
                 debugPrint("📩 Transactions already sent for user $userId");
               }
 
               List<String> suggestions = await fetchSuggestions(userId);
               debugPrint("✅ Suggestions: $suggestions");
 
-              showRepeatedNotifications(suggestions);
+              // showRepeatedNotifications(suggestions);
             },
           )
           ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));

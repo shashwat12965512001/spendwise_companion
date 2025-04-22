@@ -4,26 +4,37 @@ class NotificationHelper {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static const AndroidNotificationDetails _androidDetails =
-      AndroidNotificationDetails(
-        'recommendation_channel', // Channel ID
-        'User Recommendations', // Channel name
-        channelDescription: 'Used for financial recommendations',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker',
-      );
+  static Future<void> init() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  static const NotificationDetails _platformDetails = NotificationDetails(
-    android: _androidDetails,
-  );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
-  static Future<void> showNotification(String title, String message) async {
+    await _notificationsPlugin.initialize(initializationSettings);
+  }
+
+  static Future<void> showNotification(String title, String body) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'recommendation_channel', // channel ID
+          'User Recommendations', // channel name
+          channelDescription:
+              'This channel is used for financial recommendations',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+        );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
     await _notificationsPlugin.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000, // unique ID
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
-      message,
-      _platformDetails,
+      body,
+      platformDetails,
     );
   }
 }

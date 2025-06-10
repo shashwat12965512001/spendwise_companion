@@ -99,11 +99,7 @@ class WebViewScreenState extends State<WebViewScreen> {
             },
           )
           // ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));
-          ..loadRequest(
-            Uri.parse(
-              "https://7f67-2401-4900-91fa-ddef-f105-8c1a-6252-4e17.ngrok-free.app/",
-            ),
-          );
+          ..loadRequest(Uri.parse("https://spendwise.loca.lt/"));
   }
 
   @override

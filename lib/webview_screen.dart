@@ -99,7 +99,7 @@ class WebViewScreenState extends State<WebViewScreen> {
             },
           )
           // ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));
-          ..loadRequest(Uri.parse("http:localhost:3000/"));
+          ..loadRequest(Uri.parse("http://192.168.100.88:3000/"));
   }
 
   @override

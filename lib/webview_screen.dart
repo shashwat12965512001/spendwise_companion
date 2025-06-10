@@ -98,7 +98,8 @@ class WebViewScreenState extends State<WebViewScreen> {
               await showRepeatedNotifications(suggestions);
             },
           )
-          ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));
+          // ..loadRequest(Uri.parse("https://spendwise.weblytechnolab.com/"));
+          ..loadRequest(Uri.parse("http:localhost:3000/"));
   }
 
   @override
